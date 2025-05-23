@@ -109,8 +109,9 @@ class SightWordGame:
 
         else:
             print("\nGame Over!")
-            print(f"Your score is {self.score}/{self.total_questions} ({(self.score/self.total_questions) * 100:.2f}%).")
-            messagebox.showinfo("Game Over", f"Your score is {self.score}/{self.total_questions} ({(self.score/self.total_questions) * 100:.2f}%).")
+            percentage = 0.0 if self.total_questions == 0 else (self.score/self.total_questions) * 100
+            print(f"Your score is {self.score}/{self.total_questions} ({percentage:.2f}%).")
+            messagebox.showinfo("Game Over", f"Your score is {self.score}/{self.total_questions} ({percentage:.2f}%).")
             self.root.quit()
 
 # Start the game
