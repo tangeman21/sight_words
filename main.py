@@ -61,7 +61,7 @@ class SightWordGame:
     def replay_word(self):
         if self.word_to_guess:
             # Use kokoro to generate and play the sound
-            text = f"The word to click is {self.word_to_guess}"
+            text = f"The word to click is... \"{self.word_to_guess}\""
             generator = pipeline(text, voice='af_heart')
             for i, (gs, ps, audio) in enumerate(generator):
                 # Play the sound directly without saving to disk
@@ -72,7 +72,7 @@ class SightWordGame:
         if self.total_questions > 0:
             self.word_to_guess = random.choice(sight_words)
             # Use kokoro to generate and play the sound
-            text = f"The word to click is {self.word_to_guess}"
+            text = f"The word to click is... \"{self.word_to_guess}\""
             generator = pipeline(text, voice='af_heart')
             for i, (gs, ps, audio) in enumerate(generator):
                 # Play the sound directly without saving to disk
