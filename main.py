@@ -4,8 +4,8 @@ import random
 import pyttsx3
 from PIL import Image, ImageTk
 from kokoro import KPipeline
-
 import soundfile as sf
+import sounddevice as sd
 import torch
 pipeline = KPipeline(lang_code='a')
 text = '''
@@ -60,23 +60,23 @@ class SightWordGame:
 
     def replay_word(self):
         if self.word_to_guess:
-            # Use kokoro to generate the sound
+            # Use kokoro to generate and play the sound
             text = f"The word to click is {self.word_to_guess}"
             generator = pipeline(text, voice='af_heart')
             for i, (gs, ps, audio) in enumerate(generator):
-                sf.write(f'/tmp/sight_word_{i}.wav', audio, 24000)
-                # For simplicity, just play the first generated sound
+                # Play the sound directly without saving to disk
+                sd.play(audio, 24000)
                 break
 
     def next_question(self):
         if self.total_questions > 0:
             self.word_to_guess = random.choice(sight_words)
-            # Use kokoro to generate the sound
+            # Use kokoro to generate and play the sound
             text = f"The word to click is {self.word_to_guess}"
             generator = pipeline(text, voice='af_heart')
             for i, (gs, ps, audio) in enumerate(generator):
-                sf.write(f'/tmp/sight_word_{i}.wav', audio, 24000)
-                # For simplicity, just play the first generated sound
+                # Play the sound directly without saving to disk
+                sd.play(audio, 24000)
                 break
             self.total_questions -= 1
 

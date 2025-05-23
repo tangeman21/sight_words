@@ -4,18 +4,21 @@ import random
 import sys
 
 # Mock various modules to avoid dependency issues
+import numpy as np
+
 class MockKPipeline:
     def __init__(self, *args, **kwargs):
         pass
 
     def __call__(self, text, voice):
-        return iter([(None, None, "audio_data")])
+        return iter([(None, None, np.array([0.1], dtype=np.float32))])
 
 mock_kokoro = MagicMock()
 mock_kokoro.KPipeline = MockKPipeline
 sys.modules['kokoro'] = mock_kokoro
 sys.modules['torch'] = MagicMock()
 sys.modules['soundfile'] = MagicMock()
+sys.modules['sounddevice'] = MagicMock()
 
 # Create a mock for pyttsx3 with an init method that returns a mock engine
 mock_engine = MagicMock()
@@ -122,23 +125,26 @@ class TestSightWordGame(unittest.TestCase):
         """Test that replay_word uses kokoro to generate sound."""
         self.game.word_to_guess = "test"
         with patch('main.pipeline') as mock_pipeline:
-            # Configure the mock to return an instance with __call__ method
-            def mock_call(*args, **kwargs):
-                return iter([(None, None, "audio_data")])
-            mock_pipeline.return_value.__call__ = mock_call
-            self.game.replay_word()
+            # Mock audio data
+            class MockGenerator:
+                def __call__(self, *args, **kwargs):
+                    return iter([(None, None, "audio_data")])
+            mock_pipeline.return_value.__call__ = MockGenerator()
+            with patch('sounddevice.play'):
+                self.game.replay_word()
             mock_pipeline.assert_called_once_with('The word to click is test', voice='af_heart')
 
     def test_next_question_audio(self):
         """Test that next_question uses kokoro to generate sound."""
         with patch('main.pipeline') as mock_pipeline:
-            # Configure the mock to return an instance with __call__ method
-            def mock_call(*args, **kwargs):
-                return iter([(None, None, "audio_data")])
-            mock_pipeline.return_value.__call__ = mock_call
-
-            # Call next_question and check that pipeline is called with correct parameters
-            self.game.next_question()
+            # Mock audio data
+            class MockGenerator:
+                def __call__(self, *args, **kwargs):
+                    return iter([(None, None, "audio_data")])
+            mock_pipeline.return_value.__call__ = MockGenerator()
+            with patch('sounddevice.play'):
+                # Call next_question and check that pipeline is called with correct parameters
+                self.game.next_question()
             mock_pipeline.assert_called_once_with(f'The word to click is {self.game.word_to_guess}', voice='af_heart')
 
 if __name__ == '__main__':
