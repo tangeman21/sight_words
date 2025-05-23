@@ -1,0 +1,26 @@
+{
+  "title": "Fire Rescue Game",
+  "background_image": "images/building_on_fire.png",
+  "word_positions": [
+    {"x": 0.1, "y": 0.4, "id": "word1"},
+    {"x": 0.3, "y": 0.4, "id": "word2"},
+    {"x": 0.5, "y": 0.4, "id": "word3"},
+    {"x": 0.7, "y": 0.4, "id": "word4"},
+    {"x": 0.9, "y": 0.4, "id": "word5"}
+  ],
+  "replay_button": {
+    "x": 0.45,
+    "y": 0.8
+  },
+  "images": {
+    "fire": "images/fire.png",
+    "water": "images/water.png",
+    "help": "images/help.png",
+    "stop": "images/stop.png",
+    "go": "images/go.png"
+  },
+  "on_correct": {
+    "action": "replace_background",
+    "image": "images/rescued_building.png"
+  }
+}
