@@ -81,7 +81,9 @@ class SightWordGame:
             self.total_questions -= 1
 
             # Shuffle the words and create new buttons for each round
-            shuffled_words = random.sample(sight_words + [self.word_to_guess], 4)  # Only 4 options
+            # Ensure the correct word is included, then fill the rest with random words
+            other_words = [w for w in sight_words if w != self.word_to_guess]
+            shuffled_words = [self.word_to_guess] + random.sample(other_words, 3)  # Only 4 options total
 
             for button in self.buttons:
                 button.destroy()
