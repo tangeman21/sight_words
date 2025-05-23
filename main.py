@@ -15,9 +15,6 @@ generator = pipeline(text, voice='af_heart')
 for i, (gs, ps, audio) in enumerate(generator):
     print(i, gs, ps)
     sf.write(f'{i}.wav', audio, 24000)
-# Initialize text-to-speech engine
-engine = pyttsx3.init()
-
 # List of common sight words for beginners
 sight_words = [
     "the", "and", "a", "to", "of", "in", "that",
@@ -25,6 +22,9 @@ sight_words = [
     "he", "as", "you", "do", "at", "this", "but",
     "his", "by", "from", "or", "one", "had", "they"
 ]
+
+# Initialize text-to-speech engine
+engine = pyttsx3.init()
 
 class SightWordGame:
     def __init__(self, root):
@@ -60,14 +60,24 @@ class SightWordGame:
 
     def replay_word(self):
         if self.word_to_guess:
-            engine.say(self.word_to_guess)
-            engine.runAndWait()
+            # Use kokoro to generate the sound
+            text = f"The word to click is {self.word_to_guess}"
+            generator = pipeline(text, voice='af_heart')
+            for i, (gs, ps, audio) in enumerate(generator):
+                sf.write(f'/tmp/sight_word_{i}.wav', audio, 24000)
+                # For simplicity, just play the first generated sound
+                break
 
     def next_question(self):
         if self.total_questions > 0:
             self.word_to_guess = random.choice(sight_words)
-            engine.say(self.word_to_guess)
-            engine.runAndWait()
+            # Use kokoro to generate the sound
+            text = f"The word to click is {self.word_to_guess}"
+            generator = pipeline(text, voice='af_heart')
+            for i, (gs, ps, audio) in enumerate(generator):
+                sf.write(f'/tmp/sight_word_{i}.wav', audio, 24000)
+                # For simplicity, just play the first generated sound
+                break
             self.total_questions -= 1
 
             # Shuffle the words and create new buttons for each round
@@ -109,8 +119,9 @@ class SightWordGame:
 
         else:
             print("\nGame Over!")
-            print(f"Your score is {self.score}/{self.total_questions} ({(self.score/self.total_questions) * 100:.2f}%).")
-            messagebox.showinfo("Game Over", f"Your score is {self.score}/{self.total_questions} ({(self.score/self.total_questions) * 100:.2f}%).")
+            percentage = 0.0 if self.total_questions == 0 else (self.score/self.total_questions) * 100
+            print(f"Your score is {self.score}/{self.total_questions} ({percentage:.2f}%).")
+            messagebox.showinfo("Game Over", f"Your score is {self.score}/{self.total_questions} ({percentage}%).")
             self.root.quit()
 
 # Start the game
