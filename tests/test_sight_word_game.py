@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
+import tkinter as tk
 import random
 import sys
 
@@ -52,8 +53,9 @@ from main import SightWordGame, sight_words
 
 class TestSightWordGame(unittest.TestCase):
     def setUp(self):
-        # Create a mock root for tkinter
+        # Create a mock root for tkinter with winfo_children method
         self.root = MagicMock()
+        self.root.winfo_children = MagicMock(return_value=[])
         # Create an instance of SightWordGame with the mock root
         # We'll accept that it initializes with total_questions = 9 due to next_question() being called in __init__
         self.game = SightWordGame(self.root)
@@ -109,6 +111,73 @@ class TestSightWordGame(unittest.TestCase):
             finally:
                 # Restore original implementation
                 SightWordGame.next_question = original_next_question
+
+    def test_single_replay_button(self):
+        """Test that there is only one Replay button at the bottom."""
+        with patch('random.sample', return_value=["option1", "option2", "option3"]) as mock_sample:
+            # Store original implementation to restore later
+            original_next_question = SightWordGame.next_question
+
+            try:
+                # Track buttons created during next_question
+                created_buttons = []
+
+                # Create a custom version of tk.Button that records itself
+                real_button = mock_tk.Button
+
+                def custom_button(*args, **kwargs):
+                    button = real_button(*args, **kwargs)
+                    created_buttons.append((button, args, kwargs))
+                    return button
+
+                # Replace Button with our tracking version
+                mock_tk.Button = custom_button
+
+                # Call next_question
+                self.game.next_question()
+
+                # Check for Replay buttons
+                replay_buttons = []
+                for widget, args, kwargs in created_buttons:
+                    if 'text' in kwargs and kwargs['text'] == "Replay":
+                        replay_buttons.append(widget)
+
+                self.assertEqual(len(replay_buttons), 1)  # Only one Replay button
+
+            finally:
+                # Restore original implementation
+                SightWordGame.next_question = original_next_question
+
+    def test_replay_word_uses_kokoro(self):
+        """Test that replay_word uses kokoro to generate sound."""
+        # Set word_to_guess
+        self.game.word_to_guess = "test"
+
+        # Mock the pipeline function
+        mock_pipeline = MagicMock()
+        mock_generator = MagicMock()
+        mock_audio = MagicMock()
+
+        # Setup the generator to return our mock audio
+        mock_generator.__iter__.return_value = [(None, None, mock_audio)]
+        mock_pipeline.return_value = mock_generator
+
+        with patch('main.pipeline', mock_pipeline):
+            with patch('sounddevice.play') as mock_play:
+                self.game.replay_word()
+
+                # Check that pipeline was called with the correct text
+                mock_pipeline.assert_called_with(f"The word to click is {self.game.word_to_guess}", voice='af_heart')
+
+                # Check that play was called with the generated audio
+                mock_play.assert_called_once()
+                args, kwargs = mock_play.call_args
+                self.assertEqual(args[0], mock_audio)
+                # The samplerate parameter might be positional or named; check both ways
+                if len(args) > 1:
+                    self.assertEqual(args[1], 24000)
+                else:
+                    self.assertEqual(kwargs.get('samplerate'), 24000)
 
     @patch('random.choice')
     def test_next_question_selects_random_word(self, mock_choice):
