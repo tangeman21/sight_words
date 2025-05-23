@@ -32,7 +32,7 @@ class SightWordGame:
         self.score = 0
         self.total_questions = 10  # Number of questions in the game
         self.word_to_guess = None
-        self.buttons = []
+        self.word_buttons = []
         self.image_dict = {}
 
         for word in sight_words:
@@ -85,9 +85,9 @@ class SightWordGame:
             other_words = [w for w in sight_words if w != self.word_to_guess]
             shuffled_words = [self.word_to_guess] + random.sample(other_words, 3)  # Only 4 options total
 
-            for button in self.buttons:
+            for button in self.word_buttons:
                 button.destroy()
-            self.buttons = []
+            self.word_buttons = []
 
             for i, word in enumerate(shuffled_words):
                 frame = tk.Frame(self.root)
@@ -107,17 +107,19 @@ class SightWordGame:
                 )
                 button.pack()
 
-                # Replay button
-                replay_button = tk.Button(
-                    frame,
-                    text="Replay",
-                    width=6,
-                    height=1,
-                    command=self.replay_word
-                )
-                replay_button.pack()
+                self.word_buttons.append(button)
 
-                self.buttons.append(button)
+            # Create a single Replay button at the bottom
+            replay_frame = tk.Frame(self.root)
+            replay_frame.grid(row=2, columnspan=2)
+            replay_button = tk.Button(
+                replay_frame,
+                text="Replay",
+                width=6,
+                height=1,
+                command=self.replay_word
+            )
+            replay_button.pack()
 
         else:
             print("\nGame Over!")
