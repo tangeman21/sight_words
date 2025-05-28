@@ -1,6 +1,6 @@
 {
   "title": "Fire Rescue Game",
-  "background_image": "images/building_on_fire.png",
+  "background_image": "images/house.png",
   "word_positions": [
     {"x": 0.1, "y": 0.4, "id": "word1"},
     {"x": 0.3, "y": 0.4, "id": "word2"},
