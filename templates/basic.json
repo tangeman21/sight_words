@@ -1,0 +1,22 @@
+{
+  "title": "Basic Sight Word Game",
+  "background_image": "images/background.png",
+  "word_positions": [
+    {"x": 0.1, "y": 0.4, "id": "word1"},
+    {"x": 0.3, "y": 0.4, "id": "word2"},
+    {"x": 0.5, "y": 0.4, "id": "word3"},
+    {"x": 0.7, "y": 0.4, "id": "word4"},
+    {"x": 0.9, "y": 0.4, "id": "word5"}
+  ],
+  "replay_button": {
+    "x": 0.45,
+    "y": 0.8
+  },
+  "images": {
+    "the": "images/the.png",
+    "and": "images/and.png",
+    "a": "images/a.png",
+    "to": "images/to.png",
+    "of": "images/of.png"
+  }
+}
